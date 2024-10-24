@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\BeritaController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -36,3 +37,5 @@ Route::post('update/berita/{id}', action: [BeritaController::class, 'update']);
 
 //POST
 Route::post('add/berita', action: [BeritaController::class, 'store']);
+Route::post('login', action: [BeritaController::class, 'login']);
+Route::post('register', action: [BeritaController::class, 'register']);

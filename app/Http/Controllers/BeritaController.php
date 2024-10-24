@@ -2,16 +2,65 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Berita;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
 use App\Http\Resources\BeritaResource;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreBeritaRequest;
 use App\Http\Requests\UpdateBeritaRequest;
-
 class BeritaController extends Controller
 {
+
+     public function login(Request $request)
+    {
+        // Validasi data login
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'success' => false, // Menandakan gagal
+                'message' => 'Invalid credentials'
+            ]);
+        }
+
+        // Buat token
+        $token = $user->createToken('API Token')->plainTextToken;
+
+        return response()->json([
+            'success' => true,
+            'token' => $token
+        ]);
+    }
+    public function register(Request $request)
+    {
+        // Validasi input
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8',
+        ]);
+
+        // Buat user baru
+        $user = User::create([
+            'name' => $validatedData['name'],
+            'email' => $validatedData['email'],
+            'password' => Hash::make($validatedData['password']),
+        ]);
+
+        // Buat token untuk user baru
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        // Kirim respons berhasil
+        return response()->json([
+            'success' => true,
+            'message' => 'User registered successfully.',
+            'token' => $token,
+        ]);
+    }
     /**
      * Display a listing of the resource.
      */
