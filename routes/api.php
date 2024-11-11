@@ -39,3 +39,6 @@ Route::post('update/berita/{id}', action: [BeritaController::class, 'update']);
 Route::post('add/berita', action: [BeritaController::class, 'store']);
 Route::post('login', action: [BeritaController::class, 'login']);
 Route::post('register', action: [BeritaController::class, 'register']);
+
+//DELETE
+Route::delete('delete/{id}', action: [BeritaController::class, 'destroy']);

@@ -12,10 +12,11 @@ use App\Http\Resources\BeritaResource;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreBeritaRequest;
 use App\Http\Requests\UpdateBeritaRequest;
+
 class BeritaController extends Controller
 {
 
-     public function login(Request $request)
+    public function login(Request $request)
     {
         // Validasi data login
         $user = User::where('email', $request->email)->first();
@@ -210,7 +211,7 @@ class BeritaController extends Controller
         try {
             // Cari berita berdasarkan ID
             $berita = Berita::findOrFail($id);
-    
+
             // Cek jika ada file gambar baru yang di-upload
             if ($request->hasFile('gambar')) {
                 // Upload gambar baru
@@ -218,24 +219,24 @@ class BeritaController extends Controller
                 $filename = date('Y-m-d') . '-' . $foto->getClientOriginalName();
                 $path = 'gambar-berita/' . $filename;
                 Storage::disk('public')->put($path, file_get_contents($foto));
-    
+
                 // Hapus gambar lama jika ada
                 if ($berita->gambar && Storage::disk('public')->exists('gambar-berita/' . $berita->gambar)) {
                     Storage::disk('public')->delete('gambar-berita/' . $berita->gambar);
                 }
-    
+
                 // Update gambar di database
                 $berita->gambar = $filename;
             }
-    
+
             // Update data berita lainnya
             $berita->judul_berita = $request->input('judul_berita');
             $berita->isi_berita = $request->input('isi_berita');
             $berita->tanggal = $request->input('tanggal');
-    
+
             // Simpan perubahan
             $berita->save();
-    
+
             return response()->json([
                 'message' => 'Data Berhasil diupdate'
             ], 200);
@@ -249,8 +250,22 @@ class BeritaController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Berita $berita)
+    public function destroy($id)
     {
-        //
+        $berita = Berita::find($id);
+
+        if (!$berita) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Berita tidak ditemukan.',
+            ], 404);
+        }
+
+        $berita->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Berita berhasil dihapus.',
+        ]);
     }
 }
