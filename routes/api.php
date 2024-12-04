@@ -38,6 +38,7 @@ Route::post('update/berita/{id}', action: [BeritaController::class, 'update']);
 //POST
 Route::post('add/berita', action: [BeritaController::class, 'store']);
 Route::post('login', action: [BeritaController::class, 'login']);
+Route::middleware('auth:sanctum')->post('logout', [BeritaController::class, 'logout']);
 Route::post('register', action: [BeritaController::class, 'register']);
 
 //DELETE

@@ -15,6 +15,23 @@ use App\Http\Requests\UpdateBeritaRequest;
 
 class BeritaController extends Controller
 {
+    public function logout(Request $request)
+    {
+        try {
+            $request->user()->currentAccessToken()->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Logout berhasil',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat logout.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 
     public function login(Request $request)
     {
